@@ -11,17 +11,12 @@ class AIProviderFactory:
         """创建 AI Provider 实例
         
         Args:
-            provider_type: Provider 类型，可选值：'mock', 'openai'
+            provider_type: AI 提供者类型，可选值：mock, openai
             
         Returns:
             BaseAIProvider: AI Provider 实例
         """
-        print(f"Creating AI provider of type: {provider_type}")
-        
         if provider_type == 'openai':
             return OpenAIProvider()
-        elif provider_type == 'mock':
-            return MockProvider()
         else:
-            print(f"Unknown provider type: {provider_type}, falling back to mock")
-            return MockProvider() 
+            return MockProvider()  # 默认使用模拟数据 

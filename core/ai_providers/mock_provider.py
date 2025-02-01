@@ -9,74 +9,20 @@ class MockProvider(BaseAIProvider):
     """模拟的 AI Provider，提供高质量的模拟数据"""
     
     def generate_fortune(self, user_data: Dict[str, Any]) -> str:
-        """根据用户信息生成个性化的运势分析"""
-        print("\n=== Starting fortune generation ===")
-        
-        # 检查数据完整性
-        required_fields = ['name', 'gender', 'birthDate', 'birthPlace']
-        for field in required_fields:
-            if not user_data.get(field):
-                raise ValueError(f"Missing required field: {field}")
-        
-        title = "先生" if user_data.get('gender') == 'M' else "女士"
-        name = user_data.get('name')
-        birth_date = user_data.get('birthDate')
-        birth_place = user_data.get('birthPlace')
-        
-        print(f"Processing user info: name={name}, gender={user_data.get('gender')}, birth_date={birth_date}, birth_place={birth_place}")
-        
-        # 处理日期格式
-        date_part = birth_date.split(' ')[0]  # 先分离日期和时间
-        time_part = birth_date.split(' ')[1]
-        
-        # 处理日期部分
-        if '/' in date_part:
-            year, month, day = map(int, date_part.split('/'))
-        elif '-' in date_part:
-            year, month, day = map(int, date_part.split('-'))
-        else:
-            raise ValueError(f"Unsupported date format: {date_part}")
-        
-        # 处理时间部分
-        hour = int(time_part.split(':')[0])
-        
-        print(f"Successfully parsed date: year={year}, month={month}, day={day}, hour={hour}")
-        
-        # 计算生肖和星座
-        zodiac = self._get_chinese_zodiac(year)
-        constellation = self._get_constellation(month, day)
-        
-        print(f"Calculated: zodiac={zodiac}, constellation={constellation}")
-        
-        # 获取命理分析
-        bazi = self._get_bazi(year, month, day, hour)
-        five_elements = self._get_five_elements_analysis(year, month)
-        zodiac_compatibility = self._get_zodiac_compatibility(zodiac)
-        
-        print(f"Generated analysis: bazi={bazi}, five_elements={five_elements}")
-        
-        # 获取当前年份信息
-        current_year = datetime.now().year
-        current_zodiac = "蛇"  # 2025年是蛇年
-        
-        # 分析与当年的关系
-        year_relation = self._analyze_year_relation(zodiac, current_zodiac)
-        
-        # 生成个性化内容
-        result = f"""【整体运势】：尊敬的{name}{title}，您{year}年生于{month}月{day}日{hour}时{birth_place}。八字为{bazi}，{five_elements}。在2025乙巳年，{year_relation}。作为{zodiac}年出生的{constellation}座，您天生具有{self._get_zodiac_traits(zodiac)}的特质，同时也兼具{self._get_constellation_traits(constellation)}的性格。近期运势走向积极，尤其在{self._get_lucky_aspects(zodiac, constellation)}方面有显著提升。建议您充分发挥{zodiac}的{self._get_zodiac_advantages(zodiac)}优势，把握机遇，稳步向前。
+        """生成运势分析"""
+        return """
+【整体运势】：运势平稳向上，保持积极心态，把握机遇。
 
-【事业运势】：基于您的八字命理，近期事业运势{self._get_career_trend(zodiac, constellation)}。您的{self._get_career_strengths()}特质将在工作中发挥重要作用。{self._get_career_advice(zodiac, constellation)}。
+【事业运势】：工作发展顺利，注意提升专业能力，保持良好的团队协作。
 
-【财运分析】：从五行属性来看，您的财运受{self._get_five_elements_influence(year)}影响。{self._get_wealth_tips(month)}。理财建议：{self._get_financial_advice()}。要特别注意{self._get_financial_warnings()}。
+【财运分析】：财务状况稳定，建议合理规划支出，关注长期投资。
 
-【感情运势】：命理显示您{zodiac_compatibility}。{self._get_love_fortune(zodiac, constellation, user_data)}。在感情互动中，建议{self._get_relationship_tips()}。{self._get_love_advice(user_data)}。
+【感情运势】：感情生活和谐，保持真诚态度，增进情感交流。
 
-【健康提醒】：根据五行养生理论，{self._get_health_advice_by_elements(year)}。{self._get_health_tips()}。特别要注意{self._get_health_warnings_by_zodiac(zodiac)}。
+【健康提醒】：身体状况良好，注意作息规律，保持适度运动。
 
-【人际关系】：紫微斗数显示，您的贵人位在{self._get_lucky_direction(year)}方向。{self._get_social_advice()}。建议您{self._get_social_tips()}，以增进人际缘分。"""
-        
-        print("Successfully generated personalized content")
-        return result
+【人际关系】：人际关系融洽，多参与社交活动，深化重要友谊。
+"""
 
     def _get_chinese_zodiac(self, year: int) -> str:
         zodiac_animals = ["鼠", "牛", "虎", "兔", "龙", "蛇", "马", "羊", "猴", "鸡", "狗", "猪"]
