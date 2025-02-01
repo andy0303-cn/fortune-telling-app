@@ -10,10 +10,20 @@ document.addEventListener('DOMContentLoaded', function() {
         submitButton.textContent = '正在解读...';
         
         const formData = new FormData(fortuneForm);
+        const birthDate = formData.get('birthdate');
+        // 格式化日期
+        const formattedDate = new Date(birthDate).toLocaleString('zh-CN', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
         const data = {
             name: formData.get('name'),
             gender: formData.get('gender'),
-            birthDate: formData.get('birthdate'),
+            birthDate: formattedDate,
             birthPlace: formData.get('birthplace')
         };
 
