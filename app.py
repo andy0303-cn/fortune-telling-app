@@ -43,24 +43,18 @@ limiter = Limiter(
 
 def get_db():
     try:
-        # 使用纯密码认证
+        # 使用环境变量中的数据库配置
         connection = mysql.connector.connect(
-            host='localhost',
-            user='root',
-            password='cl50332067',
-            database='fortune_telling',
-            auth_plugin='caching_sha2_password'  # 使用新的认证插件
+            host=os.getenv('MYSQL_HOST', 'localhost'),
+            user=os.getenv('MYSQL_USER', 'root'),
+            password=os.getenv('MYSQL_PASSWORD'),
+            database=os.getenv('MYSQL_DB', 'fortune_telling'),
+            auth_plugin='caching_sha2_password'
         )
         logging.debug("Database connection successful")
         return connection
     except mysql.connector.Error as err:
         logging.error(f"Database connection failed: {err}")
-        if err.errno == mysql.connector.errorcode.ER_ACCESS_DENIED_ERROR:
-            logging.error("Something is wrong with your user name or password")
-        elif err.errno == mysql.connector.errorcode.ER_BAD_DB_ERROR:
-            logging.error("Database does not exist")
-        else:
-            logging.error(err)
         raise
 
 @app.route('/')
@@ -70,76 +64,19 @@ def index():
 @app.route('/analyze', methods=['POST'])
 def analyze_fortune():
     try:
-        data = request.get_json(force=True)  # 强制解析JSON
-        logging.debug(f"Received data: {data}")
-        
-        # 确保所有字符串都是UTF-8编码
-        data = {k: v.encode('utf-8').decode('utf-8') if isinstance(v, str) else v 
-               for k, v in data.items()}
-        
-        # 尝试连接数据库
-        try:
-            db = get_db()
-            logging.debug("Database connection established")
-        except Exception as e:
-            logging.error(f"Failed to connect to database: {str(e)}")
-            return jsonify({'status': 'error', 'message': 'Database connection failed'}), 500
-        
-        cursor = db.cursor()
-        
-        # 记录SQL语句
-        sql = """INSERT INTO users (name, gender, birth_date, birth_place)
-                 VALUES (%s, %s, %s, %s)"""
-        values = (data['name'], data['gender'], data['birthDate'], data['birthPlace'])
-        logging.debug(f"Executing SQL: {sql} with values: {values}")
-        
-        cursor.execute(sql, values)
-        user_id = cursor.lastrowid
-        
-        # 生成运势分析
-        fortune_agent = FortuneAgent(test_mode=True)  # 启用测试模式
+        data = request.get_json(force=True)
+        fortune_agent = FortuneAgent(test_mode=True)
         fortune_result = fortune_agent.analyze_fortune(data)
-        logging.debug(f"Generated fortune result: {fortune_result}")  # 添加日志
-
-        # 将结果保存到数据库
-        insert_fortune_sql = """
-            INSERT INTO fortune_readings (
-                user_id, reading_date, overall_fortune, career_fortune,
-                wealth_fortune, love_fortune, health_fortune, relationship_fortune
-            ) VALUES (%s, CURDATE(), %s, %s, %s, %s, %s, %s)
-        """
-        fortune_values = (
-            user_id,
-            fortune_result['overall_fortune'],
-            fortune_result['career_fortune'],
-            fortune_result['wealth_fortune'],
-            fortune_result['love_fortune'],
-            fortune_result['health_fortune'],
-            fortune_result['relationship_fortune']
-        )
-        logging.debug(f"Executing fortune insert SQL with values: {fortune_values}")  # 添加日志
-        
-        cursor.execute(insert_fortune_sql, fortune_values)
-        db.commit()  # 移动到这里，确保两个插入都成功
-        
         return jsonify({
             'status': 'success',
-            'user_id': user_id,
-            'message': '运势分析完成！'  # 添加用户友好的消息
+            'result': fortune_result
         })
     except Exception as e:
-        logging.error(f"Error in analyze_fortune: {str(e)}")
-        if 'db' in locals():
-            db.rollback()
+        logging.error(f"Error: {str(e)}")
         return jsonify({
             'status': 'error',
-            'message': '抱歉，分析过程中出现错误，请稍后重试。'  # 用户友好的错误消息
+            'message': '分析过程中出现错误'
         }), 500
-    finally:
-        if 'cursor' in locals():
-            cursor.close()
-        if 'db' in locals():
-            db.close()
 
 @app.route('/result')
 def result():
@@ -171,6 +108,22 @@ def result():
             cursor.close()
         if 'db' in locals():
             db.close()
+
+@app.errorhandler(500)
+def handle_500_error(error):
+    logging.error(f"Internal error: {error}")
+    return jsonify({
+        'status': 'error',
+        'message': '服务器内部错误，请稍后重试'
+    }), 500
+
+@app.errorhandler(Exception)
+def handle_exception(error):
+    logging.error(f"Unhandled exception: {error}")
+    return jsonify({
+        'status': 'error',
+        'message': '发生未知错误，请稍后重试'
+    }), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', 5000))) 
