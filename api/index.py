@@ -30,26 +30,51 @@ def analyze_fortune():
             'relationship_fortune': '暂无数据'
         }
         
-        # 简单的文本解析
+        # 改进的文本解析
         current_section = None
+        current_content = []
+        
         for line in fortune_result.split('\n'):
             line = line.strip()
-            if line.startswith('【') and line.endswith('】：'):
-                current_section = line[1:-2]  # 移除【】：
+            if not line:
                 continue
-            if current_section and line:
-                if current_section == '整体运势':
-                    sections['overall_fortune'] = line
-                elif current_section == '事业运势':
-                    sections['career_fortune'] = line
-                elif current_section == '财运分析':
-                    sections['wealth_fortune'] = line
-                elif current_section == '感情运势':
-                    sections['love_fortune'] = line
-                elif current_section == '健康提醒':
-                    sections['health_fortune'] = line
-                elif current_section == '人际关系':
-                    sections['relationship_fortune'] = line
+                
+            if line.startswith('【'):
+                if current_section and current_content:
+                    content = ' '.join(current_content)
+                    if current_section == '整体运势':
+                        sections['overall_fortune'] = content
+                    elif current_section == '事业运势':
+                        sections['career_fortune'] = content
+                    elif current_section == '财运分析':
+                        sections['wealth_fortune'] = content
+                    elif current_section == '感情运势':
+                        sections['love_fortune'] = content
+                    elif current_section == '健康提醒':
+                        sections['health_fortune'] = content
+                    elif current_section == '人际关系':
+                        sections['relationship_fortune'] = content
+                
+                current_section = line[1:].split('】')[0]
+                current_content = []
+            elif current_section:
+                current_content.append(line)
+        
+        # 处理最后一个部分
+        if current_section and current_content:
+            content = ' '.join(current_content)
+            if current_section == '整体运势':
+                sections['overall_fortune'] = content
+            elif current_section == '事业运势':
+                sections['career_fortune'] = content
+            elif current_section == '财运分析':
+                sections['wealth_fortune'] = content
+            elif current_section == '感情运势':
+                sections['love_fortune'] = content
+            elif current_section == '健康提醒':
+                sections['health_fortune'] = content
+            elif current_section == '人际关系':
+                sections['relationship_fortune'] = content
         
         # 存储结果到会话
         session['fortune_result'] = sections
@@ -59,6 +84,9 @@ def analyze_fortune():
             'result': sections
         })
     except Exception as e:
+        app.logger.error(f"Error in analyze_fortune: {str(e)}")
+        import traceback
+        app.logger.error(f"Traceback: {traceback.format_exc()}")
         return jsonify({
             'status': 'error',
             'message': str(e)
