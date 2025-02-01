@@ -2,13 +2,8 @@
     "version": 2,
     "builds": [
         {
-            "src": "app.py",
-            "use": "@vercel/python",
-            "config": {
-                "runtime": "python3.9",
-                "maxLambdaSize": "15mb",
-                "installCommand": "python -m pip install -r requirements.txt"
-            }
+            "src": "api/app.py",
+            "use": "@vercel/python"
         }
     ],
     "routes": [
@@ -18,7 +13,7 @@
         },
         {
             "src": "/(.*)",
-            "dest": "app.py"
+            "dest": "/api/app.py"
         }
     ]
 }
