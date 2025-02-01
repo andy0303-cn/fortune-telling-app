@@ -1,3 +1,7 @@
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent))
+
 from flask import Flask, render_template, request, jsonify
 import os
 import logging
@@ -7,8 +11,17 @@ from datetime import datetime
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
-# 设置日志
-logging.basicConfig(level=logging.DEBUG)
+# 设置详细的日志
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+# 记录环境信息
+logger.debug(f"Python path: {sys.path}")
+logger.debug(f"Current directory: {os.getcwd()}")
+logger.debug(f"Directory contents: {os.listdir('.')}")
 
 # 添加JSON编码器
 class CustomJSONEncoder(json.JSONEncoder):
@@ -17,7 +30,10 @@ class CustomJSONEncoder(json.JSONEncoder):
             return obj.strftime('%Y-%m-%d %H:%M:%S')
         return super().default(obj)
 
-app = Flask(__name__)
+app = Flask(__name__, 
+    template_folder=str(Path(__file__).parent.parent / 'templates'),
+    static_folder=str(Path(__file__).parent.parent / 'static')
+)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key')
 app.config['JSON_AS_ASCII'] = False
 
