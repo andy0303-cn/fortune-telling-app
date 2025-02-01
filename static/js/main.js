@@ -1,0 +1,66 @@
+document.addEventListener('DOMContentLoaded', function() {
+    const fortuneForm = document.getElementById('fortuneForm');
+    const submitButton = fortuneForm.querySelector('button[type="submit"]');
+    
+    fortuneForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // 禁用提交按钮并显示加载状态
+        submitButton.disabled = true;
+        submitButton.textContent = '正在解读...';
+        
+        const formData = new FormData(fortuneForm);
+        const data = {
+            name: formData.get('name'),
+            gender: formData.get('gender'),
+            birthDate: formData.get('birthdate'),
+            birthPlace: formData.get('birthplace')
+        };
+
+        try {
+            const response = await fetch('/analyze', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                window.location.href = '/result';
+            } else {
+                const error = await response.json();
+                showError(error.message || '提交失败，请重试');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showError('发生错误，请重试');
+        } finally {
+            // 恢复提交按钮状态
+            submitButton.disabled = false;
+            submitButton.textContent = '开始解读';
+        }
+    });
+});
+
+function showError(message) {
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message';
+    errorDiv.textContent = message;
+    
+    const form = document.getElementById('fortuneForm');
+    form.insertBefore(errorDiv, form.firstChild);
+    
+    setTimeout(() => {
+        errorDiv.remove();
+    }, 3000);
+}
+
+function submitForm() {
+    // 添加加载状态
+    document.getElementById('submit-btn').disabled = true;
+    document.getElementById('submit-btn').textContent = '分析中...';
+    
+    // ... 现有代码 ...
+} 

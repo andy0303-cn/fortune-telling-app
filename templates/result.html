@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>运势解读结果</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>运势解读结果</h1>
+        <div class="user-info">
+            <p>姓名：{{ user.name }}</p>
+            <p>性别：{{ '男' if user.gender == 'M' else '女' }}</p>
+            <p>出生日期：{{ user.birth_date.strftime('%Y年%m月%d日 %H:%M') }}</p>
+            <p>出生地点：{{ user.birth_place }}</p>
+        </div>
+        <div class="result-section">
+            <h2>总体运势</h2>
+            <p>{{ fortune.overall_fortune }}</p>
+        </div>
+        <div class="result-section">
+            <h2>事业运势</h2>
+            <p>{{ fortune.career_fortune }}</p>
+        </div>
+        <div class="result-section">
+            <h2>财运分析</h2>
+            <p>{{ fortune.wealth_fortune }}</p>
+        </div>
+        <div class="result-section">
+            <h2>感情运势</h2>
+            <p>{{ fortune.love_fortune }}</p>
+        </div>
+        <div class="result-section">
+            <h2>健康提醒</h2>
+            <p>{{ fortune.health_fortune }}</p>
+        </div>
+        <div class="result-section">
+            <h2>人际关系</h2>
+            <p>{{ fortune.relationship_fortune }}</p>
+        </div>
+        <div class="share-section">
+            <h3>分享运势解读</h3>
+            <div class="share-buttons">
+                <button onclick="shareToWeChat()" class="share-button wechat">
+                    分享到微信
+                </button>
+                <button onclick="shareToWeibo()" class="share-button weibo">
+                    分享到微博
+                </button>
+            </div>
+        </div>
+        <a href="/" class="back-button">返回首页</a>
+    </div>
+</body>
+</html> 
