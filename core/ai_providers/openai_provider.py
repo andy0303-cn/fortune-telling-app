@@ -12,19 +12,24 @@ from ..prompts import (
 
 class OpenAIProvider(BaseAIProvider):
     def __init__(self, fallback_provider=None):
-        self.fallback_provider = fallback_provider  # 添加备用提供者
-        # 创建带有代理的 HTTP 客户端
-        proxy = os.getenv('HTTP_PROXY', 'http://127.0.0.1:7890')
-        timeout = httpx.Timeout(60.0, connect=20.0)
+        self.fallback_provider = fallback_provider
         
-        http_client = httpx.Client(
-            proxy=proxy,
-            timeout=timeout,
-            verify=False
-        )
+        # 只在本地开发时使用代理
+        if os.getenv('FLASK_ENV') == 'development':
+            proxy = os.getenv('HTTP_PROXY', 'http://127.0.0.1:7890')
+            timeout = httpx.Timeout(60.0, connect=20.0)
+            http_client = httpx.Client(
+                proxy=proxy,
+                timeout=timeout,
+                verify=False
+            )
+        else:
+            http_client = httpx.Client(
+                timeout=httpx.Timeout(60.0, connect=20.0)
+            )
         
         self.client = OpenAI(
-            api_key=os.getenv('OPENAI_API_KEY'),  # 使用原始密钥
+            api_key=os.getenv('OPENAI_API_KEY'),
             http_client=http_client
         )
         

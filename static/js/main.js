@@ -32,13 +32,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     window.location.href = '/result';
                 } else {
                     showError(result.message || '分析失败');
+                    console.error('API Error:', result);
                 }
             } else {
                 const error = await response.json();
                 showError(error.message || '提交失败，请重试');
+                console.error('HTTP Error:', error);
             }
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Network Error:', error);
             showError('发生错误，请重试');
         } finally {
             // 恢复提交按钮状态
