@@ -2,48 +2,46 @@
 <html>
 <head>
     <title>运势分析结果</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <div class="container">
         <h1>运势分析结果</h1>
         <div class="user-info">
-            <h2>基本信息</h2>
             <p>姓名：{{ user.name }}</p>
             <p>性别：{{ '男' if user.gender == 'M' else '女' }}</p>
             <p>出生日期：{{ user.birth_date }}</p>
             <p>出生地点：{{ user.birth_place }}</p>
         </div>
         <div class="fortune-result">
-            <h2>运势分析</h2>
             <section>
-                <h3>总体运势</h3>
+                <h2>整体运势</h2>
                 <p>{{ fortune.overall_fortune }}</p>
             </section>
             <section>
-                <h3>事业运势</h3>
+                <h2>事业运势</h2>
                 <p>{{ fortune.career_fortune }}</p>
             </section>
             <section>
-                <h3>财运分析</h3>
+                <h2>财运分析</h2>
                 <p>{{ fortune.wealth_fortune }}</p>
             </section>
             <section>
-                <h3>感情运势</h3>
+                <h2>感情运势</h2>
                 <p>{{ fortune.love_fortune }}</p>
             </section>
             <section>
-                <h3>健康提醒</h3>
+                <h2>健康提醒</h2>
                 <p>{{ fortune.health_fortune }}</p>
             </section>
             <section>
-                <h3>人际关系</h3>
+                <h2>人际关系</h2>
                 <p>{{ fortune.relationship_fortune }}</p>
             </section>
         </div>
-        <a href="/" class="back-button">返回首页</a>
+        <div class="actions">
+            <a href="/" class="button">返回首页</a>
+        </div>
     </div>
 </body>
 </html> 

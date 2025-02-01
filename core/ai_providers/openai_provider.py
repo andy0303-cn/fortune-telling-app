@@ -21,35 +21,9 @@ class OpenAIProvider(BaseAIProvider):
         self.logger = logging.getLogger(__name__)
     
     def generate_fortune(self, user_data: Dict[str, Any]) -> str:
-        """生成运势分析
-        
-        Args:
-            user_data: 用户信息字典
-            
-        Returns:
-            str: 运势分析结果
-        """
-        if self.test_mode:
-            self.logger.info("Using test mode, returning mock data")
-            return self._get_mock_response()
-            
-        # 构建完整的提示词
-        prompt = f"""
-{FORTUNE_KNOWLEDGE_BASE}
-
-{FORTUNE_MASTER_PROMPT}
-
-用户信息：
-姓名：{user_data.get('name')}
-性别：{user_data.get('gender')}
-出生日期：{user_data.get('birthDate')}
-出生地点：{user_data.get('birthPlace')}
-
-{RESPONSE_FORMAT}
-"""
-        # TODO: 实现真实的 OpenAI API 调用
-        self.logger.warning("OpenAI API call not implemented yet")
-        return self._get_mock_response()
+        """使用 OpenAI 生成运势分析"""
+        # TODO: 实现 OpenAI 调用
+        return "OpenAI 运势分析结果"
     
     def _get_mock_response(self) -> str:
         """获取模拟响应"""
