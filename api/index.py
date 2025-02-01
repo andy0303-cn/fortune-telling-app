@@ -1,38 +1,18 @@
-import sys
-from pathlib import Path
-sys.path.append(str(Path(__file__).parent.parent))
-
 from flask import Flask, render_template, request, jsonify
 import os
 import logging
-from core.deepseek_agent import FortuneAgent
 import json
 from datetime import datetime
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
-# 设置详细的日志
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
+# 设置日志
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-# 记录环境信息
-logger.debug(f"Python path: {sys.path}")
-logger.debug(f"Current directory: {os.getcwd()}")
-logger.debug(f"Directory contents: {os.listdir('.')}")
-
-# 添加JSON编码器
-class CustomJSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, datetime):
-            return obj.strftime('%Y-%m-%d %H:%M:%S')
-        return super().default(obj)
-
 app = Flask(__name__, 
-    template_folder=str(Path(__file__).parent.parent / 'templates'),
-    static_folder=str(Path(__file__).parent.parent / 'static')
+    template_folder='../templates',
+    static_folder='../static'
 )
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key')
 app.config['JSON_AS_ASCII'] = False
@@ -51,8 +31,15 @@ def index():
 def analyze_fortune():
     try:
         data = request.get_json(force=True)
-        fortune_agent = FortuneAgent(test_mode=True)
-        fortune_result = fortune_agent.analyze_fortune(data)
+        # 使用模拟数据而不是调用 AI API
+        fortune_result = {
+            'overall_fortune': '整体运势良好，有上升趋势。',
+            'career_fortune': '事业发展稳定，有新的机会。',
+            'wealth_fortune': '财运平稳，注意理财规划。',
+            'love_fortune': '感情运势上升，保持开放心态。',
+            'health_fortune': '身体状况良好，注意作息。',
+            'relationship_fortune': '人际关系和谐，多与人交流。'
+        }
         return jsonify({
             'status': 'success',
             'result': fortune_result
