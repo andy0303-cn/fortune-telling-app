@@ -8,14 +8,7 @@ class AIProviderFactory:
     
     @staticmethod
     def create_provider(provider_type: str = 'mock') -> BaseAIProvider:
-        """创建 AI Provider 实例
-        
-        Args:
-            provider_type: AI 提供者类型，可选值：mock, openai
-            
-        Returns:
-            BaseAIProvider: AI Provider 实例
-        """
+        """创建 AI Provider 实例"""
         if provider_type == 'openai':
             return OpenAIProvider()
         else:
