@@ -12,4 +12,7 @@ venv/
 .idea/
 
 # 日志
-*.log 
+*.log
+
+# Vercel
+.vercel 

@@ -1,3 +1,10 @@
+import sys
+from pathlib import Path
+
+# 添加项目根目录到 Python 路径
+root_dir = Path(__file__).parent.parent
+sys.path.append(str(root_dir))
+
 from flask import Flask, render_template, request, jsonify, session
 from core.ai_providers.factory import AIProviderFactory
 
@@ -15,10 +22,15 @@ def index():
 def analyze_fortune():
     try:
         data = request.get_json(force=True)
+        print("\n=== Starting analysis ===")
+        print("Received data:", data)
         
-        # 使用工厂创建 AI Provider（默认使用 mock）
-        provider = AIProviderFactory.create_provider()
+        # 明确指定使用 mock provider
+        provider = AIProviderFactory.create_provider('mock')
+        print("Created provider:", provider.__class__.__name__)
+        
         fortune_result = provider.generate_fortune(data)
+        print("Raw fortune result:", fortune_result)  # 打印原始结果
         
         # 解析返回的文本，提取各个部分
         sections = {
@@ -30,7 +42,7 @@ def analyze_fortune():
             'relationship_fortune': '暂无数据'
         }
         
-        # 改进的文本解析
+        # 改进文本解析逻辑
         current_section = None
         current_content = []
         
@@ -38,45 +50,31 @@ def analyze_fortune():
             line = line.strip()
             if not line:
                 continue
+            
+            print(f"Processing line: {line}")  # 调试每一行
+            
+            if '】：' in line:
+                section_name = line.split('】：')[0].lstrip('【')
+                content = line.split('】：')[1]
                 
-            if line.startswith('【'):
-                if current_section and current_content:
-                    content = ' '.join(current_content)
-                    if current_section == '整体运势':
-                        sections['overall_fortune'] = content
-                    elif current_section == '事业运势':
-                        sections['career_fortune'] = content
-                    elif current_section == '财运分析':
-                        sections['wealth_fortune'] = content
-                    elif current_section == '感情运势':
-                        sections['love_fortune'] = content
-                    elif current_section == '健康提醒':
-                        sections['health_fortune'] = content
-                    elif current_section == '人际关系':
-                        sections['relationship_fortune'] = content
+                print(f"Found section: {section_name}")  # 调试节点
+                print(f"Content: {content}")  # 调试内容
                 
-                current_section = line[1:].split('】')[0]
-                current_content = []
-            elif current_section:
-                current_content.append(line)
+                if section_name == '整体运势':
+                    sections['overall_fortune'] = content
+                elif section_name == '事业运势':
+                    sections['career_fortune'] = content
+                elif section_name == '财运分析':
+                    sections['wealth_fortune'] = content
+                elif section_name == '感情运势':
+                    sections['love_fortune'] = content
+                elif section_name == '健康提醒':
+                    sections['health_fortune'] = content
+                elif section_name == '人际关系':
+                    sections['relationship_fortune'] = content
         
-        # 处理最后一个部分
-        if current_section and current_content:
-            content = ' '.join(current_content)
-            if current_section == '整体运势':
-                sections['overall_fortune'] = content
-            elif current_section == '事业运势':
-                sections['career_fortune'] = content
-            elif current_section == '财运分析':
-                sections['wealth_fortune'] = content
-            elif current_section == '感情运势':
-                sections['love_fortune'] = content
-            elif current_section == '健康提醒':
-                sections['health_fortune'] = content
-            elif current_section == '人际关系':
-                sections['relationship_fortune'] = content
+        print("Final parsed sections:", sections)  # 打印最终结果
         
-        # 存储结果到会话
         session['fortune_result'] = sections
         
         return jsonify({
@@ -84,9 +82,9 @@ def analyze_fortune():
             'result': sections
         })
     except Exception as e:
-        app.logger.error(f"Error in analyze_fortune: {str(e)}")
+        print(f"Error in analyze_fortune: {str(e)}")
         import traceback
-        app.logger.error(f"Traceback: {traceback.format_exc()}")
+        print(f"Traceback: {traceback.format_exc()}")
         return jsonify({
             'status': 'error',
             'message': str(e)
