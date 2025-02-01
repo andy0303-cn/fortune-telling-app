@@ -28,7 +28,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (response.ok) {
                 const result = await response.json();
-                window.location.href = '/result';
+                if (result.status === 'success') {
+                    window.location.href = '/result';
+                } else {
+                    showError(result.message || '分析失败');
+                }
             } else {
                 const error = await response.json();
                 showError(error.message || '提交失败，请重试');
