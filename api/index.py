@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify, session
+from core.ai_providers.factory import AIProviderFactory
 
 app = Flask(__name__, 
     template_folder='../templates',
@@ -14,20 +15,48 @@ def index():
 def analyze_fortune():
     try:
         data = request.get_json(force=True)
-        # 使用完整的模拟数据
-        fortune_result = {
-            'overall_fortune': '整体运势良好，有上升趋势。',
-            'career_fortune': '事业发展稳定，有新的机会。',
-            'wealth_fortune': '财运平稳，注意理财规划。',
-            'love_fortune': '感情运势上升，保持开放心态。',
-            'health_fortune': '身体状况良好，注意作息。',
-            'relationship_fortune': '人际关系和谐，多与人交流。'
+        
+        # 使用工厂创建 AI Provider（默认使用 mock）
+        provider = AIProviderFactory.create_provider()
+        fortune_result = provider.generate_fortune(data)
+        
+        # 解析返回的文本，提取各个部分
+        sections = {
+            'overall_fortune': '暂无数据',
+            'career_fortune': '暂无数据',
+            'wealth_fortune': '暂无数据',
+            'love_fortune': '暂无数据',
+            'health_fortune': '暂无数据',
+            'relationship_fortune': '暂无数据'
         }
-        # 将结果存储在会话中
-        session['fortune_result'] = fortune_result
+        
+        # 简单的文本解析
+        current_section = None
+        for line in fortune_result.split('\n'):
+            line = line.strip()
+            if line.startswith('【') and line.endswith('】：'):
+                current_section = line[1:-2]  # 移除【】：
+                continue
+            if current_section and line:
+                if current_section == '整体运势':
+                    sections['overall_fortune'] = line
+                elif current_section == '事业运势':
+                    sections['career_fortune'] = line
+                elif current_section == '财运分析':
+                    sections['wealth_fortune'] = line
+                elif current_section == '感情运势':
+                    sections['love_fortune'] = line
+                elif current_section == '健康提醒':
+                    sections['health_fortune'] = line
+                elif current_section == '人际关系':
+                    sections['relationship_fortune'] = line
+        
+        # 存储结果到会话
+        session['fortune_result'] = sections
+        
         return jsonify({
             'status': 'success',
-            'result': fortune_result
+            'result': sections
         })
     except Exception as e:
         return jsonify({
