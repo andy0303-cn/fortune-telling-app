@@ -1,42 +1,68 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('fortune-form');
+    const fortuneForm = document.getElementById('fortuneForm');
+    const submitButton = fortuneForm.querySelector('button[type="submit"]');
     
-    form.addEventListener('submit', async function(e) {
+    fortuneForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        const formData = {
-            name: document.getElementById('name').value,
-            gender: document.querySelector('input[name="gender"]:checked').value,
-            birthDate: document.getElementById('birthdate').value,
-            birthPlace: document.getElementById('birthplace').value
+        // 禁用提交按钮并显示加载状态
+        submitButton.disabled = true;
+        submitButton.textContent = '正在解读...';
+        
+        const formData = new FormData(fortuneForm);
+        const birthDate = formData.get('birthdate');
+        // 格式化日期
+        const formattedDate = new Date(birthDate).toLocaleString('zh-CN', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        const data = {
+            name: formData.get('name'),
+            gender: formData.get('gender'),
+            birthDate: formattedDate,
+            birthPlace: formData.get('birthplace')
         };
         
         try {
             const response = await fetch('/analyze', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(data)
             });
             
-            const result = await response.json();
-            
-            if (result.status === 'success') {
-                // 重定向到结果页面
-                const params = new URLSearchParams({
-                    name: formData.name,
-                    gender: formData.gender,
-                    birthdate: formData.birthDate,
-                    birthplace: formData.birthPlace
-                });
-                window.location.href = `/result?${params.toString()}`;
+            if (response.ok) {
+                const result = await response.json();
+                if (result.status === 'success') {
+                    // 将用户数据添加到 URL 参数
+                    const params = new URLSearchParams({
+                        name: data.name,
+                        gender: data.gender,
+                        birthdate: data.birthDate,
+                        birthplace: data.birthPlace
+                    });
+                    window.location.href = `/result?${params.toString()}`;
+                } else {
+                    showError(result.message || '分析失败');
+                    console.error('API Error:', result);
+                }
             } else {
-                alert('分析失败：' + result.message);
+                const error = await response.json();
+                showError(error.message || '提交失败，请重试');
+                console.error('HTTP Error:', error);
             }
         } catch (error) {
-            console.error('Error:', error);
-            alert('请求失败，请稍后重试');
+            console.error('Network Error:', error);
+            showError('发生错误，请重试');
+        } finally {
+            // 恢复提交按钮状态
+            submitButton.disabled = false;
+            submitButton.textContent = '开始解读';
         }
     });
 });
