@@ -1,6 +1,5 @@
 import sys
 from pathlib import Path
-import os
 
 # 添加项目根目录到 Python 路径
 root_dir = Path(__file__).parent.parent
@@ -13,9 +12,7 @@ app = Flask(__name__,
     template_folder='../templates',
     static_folder='../static'
 )
-
-# 从环境变量获取密钥，如果没有则使用默认值
-app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'your-secret-key')
+app.config['SECRET_KEY'] = 'your-secret-key'  # 用于会话加密
 
 @app.route('/')
 def index():
@@ -28,10 +25,7 @@ def analyze_fortune():
         print("\n=== Starting analysis ===")
         print("Received data:", data)
         
-        # 明确指定使用 mock provider
-        provider = AIProviderFactory.create_provider('mock')
-        print("Created provider:", provider.__class__.__name__)
-        
+        provider = AIProviderFactory.create_provider()
         fortune_result = provider.generate_fortune(data)
         print("Raw fortune result:", fortune_result)  # 打印原始结果
         
