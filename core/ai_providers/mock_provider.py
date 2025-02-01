@@ -27,8 +27,7 @@ class MockProvider(BaseAIProvider):
             career_advice = self._get_career_advice(season)
             wealth_tips = self._get_wealth_tips(birth_month)
             
-            return f"""
-【整体运势】：尊敬的{name}{title}，从您{season}的出生时节来看，您天生具有{self._get_season_traits(season)}的特质。近期运势走向积极，尤其在{lucky_elements}方面有显著提升。建议您充分发挥{season}生人特有的优势，把握机遇，稳步向前。
+            return f"""【整体运势】：尊敬的{name}{title}，从您{season}的出生时节来看，您天生具有{self._get_season_traits(season)}的特质。近期运势走向积极，尤其在{lucky_elements}方面有显著提升。建议您充分发挥{season}生人特有的优势，把握机遇，稳步向前。
 
 【事业运势】：职业发展呈现上升趋势，{career_advice}。您的{self._get_career_strengths()}特质将在工作中发挥重要作用。注意与{self._get_cooperation_tips()}，以获得更好的发展机会。
 
@@ -38,8 +37,7 @@ class MockProvider(BaseAIProvider):
 
 【健康提醒】：{self._get_health_advice(season)}。建议您{self._get_health_tips()}，保持充沛精力。特别要注意{self._get_health_warnings(season)}，以维护身心健康。
 
-【人际关系】：人际关系将迎来新的发展机遇。{self._get_social_advice()}。在社交活动中，建议您{self._get_social_tips()}，以建立更深厚的人际连接。
-"""
+【人际关系】：人际关系将迎来新的发展机遇。{self._get_social_advice()}。在社交活动中，建议您{self._get_social_tips()}，以建立更深厚的人际连接。"""
         except Exception as e:
             # 返回更有内容的默认响应
             return self._get_default_response()
