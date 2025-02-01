@@ -29,7 +29,14 @@ document.addEventListener('DOMContentLoaded', function() {
             if (response.ok) {
                 const result = await response.json();
                 if (result.status === 'success') {
-                    window.location.href = '/result';
+                    // 将用户数据添加到 URL 参数
+                    const params = new URLSearchParams({
+                        name: data.name,
+                        gender: data.gender,
+                        birthdate: data.birthDate,
+                        birthplace: data.birthPlace
+                    });
+                    window.location.href = `/result?${params.toString()}`;
                 } else {
                     showError(result.message || '分析失败');
                     console.error('API Error:', result);
