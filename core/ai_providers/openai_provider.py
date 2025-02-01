@@ -1,6 +1,4 @@
 import os
-from openai import OpenAI  # 改回标准客户端
-import httpx
 from typing import Dict, Any
 import logging
 from .base import BaseAIProvider
@@ -11,77 +9,46 @@ from ..prompts import (
 )
 
 class OpenAIProvider(BaseAIProvider):
-    def __init__(self, fallback_provider=None):
-        self.fallback_provider = fallback_provider
+    """OpenAI API Provider"""
+    
+    def __init__(self, test_mode: bool = True):
+        """初始化 OpenAI Provider
         
-        # 只在本地开发时使用代理
-        if os.getenv('FLASK_ENV') == 'development':
-            proxy = os.getenv('HTTP_PROXY', 'http://127.0.0.1:7890')
-            timeout = httpx.Timeout(60.0, connect=20.0)
-            http_client = httpx.Client(
-                proxy=proxy,
-                timeout=timeout,
-                verify=False
-            )
-        else:
-            http_client = httpx.Client(
-                timeout=httpx.Timeout(60.0, connect=20.0)
-            )
-        
-        self.client = OpenAI(
-            api_key=os.getenv('OPENAI_API_KEY'),
-            http_client=http_client
-        )
-        
+        Args:
+            test_mode: 是否使用测试模式（不实际调用 API）
+        """
+        self.test_mode = test_mode
+        self.logger = logging.getLogger(__name__)
+    
     def generate_fortune(self, user_data: Dict[str, Any]) -> str:
-        try:
-            prompt = self._generate_prompt(user_data)
-            logging.debug("Generated prompt for OpenAI")
-            
-            response = self.client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "你是一位精通中西方命理的大师。"
-                    },
-                    {
-                        "role": "user",
-                        "content": FORTUNE_KNOWLEDGE_BASE
-                    },
-                    {
-                        "role": "assistant",
-                        "content": "我已经完全理解并掌握了这些命理知识体系。"
-                    },
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ]
-            )
-            
-            content = response.choices[0].message.content
-            logging.debug(f"Received response from OpenAI API: {content[:100]}...")
-            return content
-            
-        except Exception as e:
-            logging.error(f"OpenAI API调用失败: {str(e)}")
-            logging.error(f"错误类型: {type(e)}")
-            import traceback
-            logging.error(f"堆栈跟踪: {traceback.format_exc()}")
-            raise
+        """生成运势分析
         
-    def _generate_prompt(self, user_data: Dict[str, Any]) -> str:
-        return f"""
-{FORTUNE_MASTER_PROMPT}
+        Args:
+            user_data: 用户信息字典
+            
+        Returns:
+            str: 运势分析结果
+        """
+        if self.test_mode:
+            self.logger.info("Using test mode, returning mock data")
+            return self._get_mock_response()
+            
+        # TODO: 实现真实的 OpenAI API 调用
+        self.logger.warning("OpenAI API call not implemented yet")
+        return self._get_mock_response()
+    
+    def _get_mock_response(self) -> str:
+        """获取模拟响应"""
+        return """
+【整体运势】：运势平稳上升，充满机遇与挑战。保持开放心态，积极把握机会。
 
-{RESPONSE_FORMAT}
+【事业运势】：职业发展前景广阔，有望获得重要突破。注意提升专业技能，保持良好的工作态度。
 
-用户信息：
-- 姓名：{user_data['name']}
-- 性别：{'男' if user_data['gender'] == 'M' else '女'}
-- 出生日期：{user_data['birthDate']}
-- 出生地点：{user_data['birthPlace']}
+【财运分析】：财运稳定，可能有意外收获。建议合理规划支出，注意风险控制。
 
-请基于以上信息，按照指定格式提供完整的运势分析。记住使用【】标记每个维度，确保分析内容详实且实用。
+【感情运势】：桃花运旺盛，容易获得异性青睐。已有伴侣者感情更加稳定甜蜜。
+
+【健康提醒】：身体状况良好，但需要注意作息规律。建议适当运动，保持充足睡眠。
+
+【人际关系】：人缘运势不错，社交圈将有所扩大。把握机会建立新的人脉关系。
 """ 
