@@ -104,5 +104,24 @@ def handle_exception(error):
         'message': '发生未知错误，请稍后重试'
     }), 500
 
+# 确保导出 app 变量给 Vercel
+app = app
+
+# 修改处理函数
+def handler(request):
+    """Handle incoming requests."""
+    try:
+        logger.debug(f"Received request: {request}")
+        return app
+    except Exception as e:
+        logger.error(f"Handler error: {str(e)}")
+        return {
+            'statusCode': 500,
+            'body': json.dumps({
+                'status': 'error',
+                'message': str(e)
+            })
+        }
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', 5000))) 
