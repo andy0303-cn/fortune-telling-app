@@ -13,9 +13,14 @@ def index():
 def analyze_fortune():
     try:
         data = request.get_json(force=True)
-        # 使用模拟数据
+        # 使用完整的模拟数据
         fortune_result = {
-            'overall_fortune': '测试运势分析结果'
+            'overall_fortune': '整体运势良好，有上升趋势。',
+            'career_fortune': '事业发展稳定，有新的机会。',
+            'wealth_fortune': '财运平稳，注意理财规划。',
+            'love_fortune': '感情运势上升，保持开放心态。',
+            'health_fortune': '身体状况良好，注意作息。',
+            'relationship_fortune': '人际关系和谐，多与人交流。'
         }
         return jsonify({
             'status': 'success',
