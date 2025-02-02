@@ -26,15 +26,19 @@ document.addEventListener('DOMContentLoaded', function() {
             if (response.ok) {
                 const result = await response.json();
                 if (result.status === 'success') {
-                    // 将数据添加到 URL 参数
+                    // 存储分析结果
+                    localStorage.setItem('fortuneResult', JSON.stringify(result.data));
+                    // 将用户数据添加到 URL 参数
                     const params = new URLSearchParams({
                         name: data.name,
-                        gender: data.gender,
-                        birthdate: data.birthdate,
+                        gender: data.gender === 'M' ? '男' : '女',
+                        birthdate: new Date(data.birthdate).toLocaleString('zh-CN'),
                         birthplace: data.birthplace
                     });
-                    // 跳转到结果页面
-                    window.location.href = `/result?${params.toString()}`;
+                    // 使用完整的 URL 进行跳转
+                    const resultUrl = `/result?${params.toString()}`;
+                    console.log('Redirecting to:', resultUrl);
+                    window.location.href = resultUrl;
                 } else {
                     throw new Error('分析失败');
                 }
