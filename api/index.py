@@ -13,17 +13,15 @@ class handler(BaseHTTPRequestHandler):
         parsed_url = urlparse(self.path)
         path = parsed_url.path
         
-        # 添加 CORS 头
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
-        
         if path == '/':
             # 返回 index.html
             try:
                 content = read_file('templates/index.html')
                 self.send_response(200)
                 self.send_header('Content-type', 'text/html; charset=utf-8')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+                self.send_header('Access-Control-Allow-Headers', 'Content-Type')
                 self.end_headers()
                 self.wfile.write(content.encode())
             except Exception as e:
@@ -35,6 +33,7 @@ class handler(BaseHTTPRequestHandler):
                 content = read_file('static/css/style.css')
                 self.send_response(200)
                 self.send_header('Content-type', 'text/css')
+                self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
                 self.wfile.write(content.encode())
             except Exception as e:
@@ -46,6 +45,7 @@ class handler(BaseHTTPRequestHandler):
                 content = read_file('static/js/main.js')
                 self.send_response(200)
                 self.send_header('Content-type', 'application/javascript')
+                self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
                 self.wfile.write(content.encode())
             except Exception as e:
@@ -57,6 +57,7 @@ class handler(BaseHTTPRequestHandler):
                 content = read_file('templates/result.html')
                 self.send_response(200)
                 self.send_header('Content-type', 'text/html; charset=utf-8')
+                self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
                 self.wfile.write(content.encode())
             except Exception as e:
@@ -68,6 +69,7 @@ class handler(BaseHTTPRequestHandler):
                 content = read_file('static/js/result.js')
                 self.send_response(200)
                 self.send_header('Content-type', 'application/javascript')
+                self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
                 self.wfile.write(content.encode())
             except Exception as e:
@@ -77,40 +79,37 @@ class handler(BaseHTTPRequestHandler):
             self.send_error(404, "File not found")
 
     def do_POST(self):
-        # 添加 CORS 头
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
-        
         if self.path == '/analyze':
-            # 读取 POST 数据
-            content_length = int(self.headers['Content-Length'])
-            post_data = self.rfile.read(content_length)
-            user_data = json.loads(post_data.decode('utf-8'))
+            try:
+                content_length = int(self.headers['Content-Length'])
+                post_data = self.rfile.read(content_length)
+                user_data = json.loads(post_data.decode('utf-8'))
 
-            # 生成分析结果
-            result = {
-                'status': 'success',
-                'data': {
-                    'overall': '运势平稳向上，保持积极心态，把握机遇。',
-                    'career': '工作发展顺利，注意提升专业能力，保持良好的团队协作。',
-                    'wealth': '财务状况稳定，建议合理规划支出，关注长期投资。',
-                    'love': '感情生活和谐，保持真诚态度，增进情感交流。',
-                    'health': '身体状况良好，注意作息规律，保持适度运动。',
-                    'relationships': '人际关系融洽，多参与社交活动，深化重要友谊。'
+                result = {
+                    'status': 'success',
+                    'data': {
+                        'overall': '运势平稳向上，保持积极心态，把握机遇。',
+                        'career': '工作发展顺利，注意提升专业能力，保持良好的团队协作。',
+                        'wealth': '财务状况稳定，建议合理规划支出，关注长期投资。',
+                        'love': '感情生活和谐，保持真诚态度，增进情感交流。',
+                        'health': '身体状况良好，注意作息规律，保持适度运动。',
+                        'relationships': '人际关系融洽，多参与社交活动，深化重要友谊。'
+                    }
                 }
-            }
 
-            # 返回 JSON 响应
-            self.send_response(200)
-            self.send_header('Content-type', 'application/json')
-            self.end_headers()
-            self.wfile.write(json.dumps(result).encode())
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+                self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+                self.end_headers()
+                self.wfile.write(json.dumps(result).encode())
+            except Exception as e:
+                self.send_error(500, str(e))
         else:
             self.send_error(404, "Not found")
 
     def do_OPTIONS(self):
-        # 处理预检请求
         self.send_response(200)
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
