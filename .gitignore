@@ -4,15 +4,15 @@ __pycache__/
 *$py.class
 venv/
 
-# 环境变量
-.env
-
 # IDE
 .vscode/
 .idea/
 
-# 日志
-*.log
-
 # Vercel
-.vercel 
+.vercel
+
+# Environment
+.env
+
+# 日志
+*.log 
