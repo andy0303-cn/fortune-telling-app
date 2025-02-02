@@ -13,6 +13,11 @@ class handler(BaseHTTPRequestHandler):
         parsed_url = urlparse(self.path)
         path = parsed_url.path
         
+        # 添加 CORS 头
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        
         if path == '/':
             # 返回 index.html
             try:
@@ -72,6 +77,11 @@ class handler(BaseHTTPRequestHandler):
             self.send_error(404, "File not found")
 
     def do_POST(self):
+        # 添加 CORS 头
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        
         if self.path == '/analyze':
             # 读取 POST 数据
             content_length = int(self.headers['Content-Length'])
@@ -97,4 +107,12 @@ class handler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps(result).encode())
         else:
-            self.send_error(404, "Not found") 
+            self.send_error(404, "Not found")
+
+    def do_OPTIONS(self):
+        # 处理预检请求
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.end_headers() 
