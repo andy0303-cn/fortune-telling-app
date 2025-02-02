@@ -1,9 +1,13 @@
-from http.server import BaseHTTPRequestHandler
+from flask import Flask, render_template, send_from_directory
 
-class handler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header('Content-type', 'text/plain')
-        self.end_headers()
-        self.wfile.write('Hello from Vercel!'.encode())
-        return 
+app = Flask(__name__, 
+    template_folder='../templates',
+    static_folder='../static'
+)
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+if __name__ == '__main__':
+    app.run(debug=True) 

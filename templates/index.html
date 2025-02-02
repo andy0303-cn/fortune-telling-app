@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>命理分析</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>命理分析</h1>
+        <form id="fortuneForm" class="form-container">
+            <div class="input-group">
+                <label for="name">姓名</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            
+            <div class="input-group">
+                <label>性别</label>
+                <div class="radio-group">
+                    <input type="radio" id="male" name="gender" value="M" checked>
+                    <label for="male">男</label>
+                    <input type="radio" id="female" name="gender" value="F">
+                    <label for="female">女</label>
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label for="birthdate">出生日期</label>
+                <input type="datetime-local" id="birthdate" name="birthdate" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="birthplace">出生地点</label>
+                <input type="text" id="birthplace" name="birthplace" required>
+            </div>
+            
+            <button type="submit">开始分析</button>
+        </form>
+    </div>
+</body>
+</html> 
