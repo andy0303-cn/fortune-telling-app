@@ -2,7 +2,7 @@ from http.server import BaseHTTPRequestHandler
 import os
 import json
 from urllib.parse import urlparse, parse_qs
-from fortune_analysis import FortuneAnalyzer
+from .fortune_analysis import FortuneAnalyzer
 
 # API Version 1.0.1
 # Last updated: 2024-02-02
@@ -58,22 +58,22 @@ class handler(BaseHTTPRequestHandler):
             else:
                 self.send_error(500, str(e))
 
-    async def do_POST(self):
+    def do_POST(self):
         if self.path == '/analyze':
             try:
                 content_length = int(self.headers['Content-Length'])
                 post_data = self.rfile.read(content_length)
                 user_data = json.loads(post_data.decode('utf-8'))
-                print(f"Received POST data: {user_data}")  # 调试信息
+                print(f"Received POST data: {user_data}")
 
-                # 使用命理分析器生成结果
-                result = await self.analyzer.analyze(user_data)
+                # 使用同步方式调用分析器
+                result = self.analyzer.analyze(user_data)
 
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
                 self.end_headers()
                 self.wfile.write(json.dumps(result).encode())
-                print("Successfully sent analysis result")  # 调试信息
+                print("Successfully sent analysis result")
 
             except Exception as e:
                 print(f"Error processing POST request: {str(e)}")

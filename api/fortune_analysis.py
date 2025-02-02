@@ -7,7 +7,7 @@ class FortuneAnalyzer:
         self.openai_key = os.getenv('OPENAI_API_KEY', '')
         self.deepseek_key = os.getenv('DEEPSEEK_API_KEY', '')
 
-    async def analyze(self, user_data):
+    def analyze(self, user_data):
         """
         分析用户命理
         暂时返回模拟数据，后续接入 AI API
