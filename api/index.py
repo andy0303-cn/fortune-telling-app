@@ -68,11 +68,17 @@ class handler(BaseHTTPRequestHandler):
 
                 # 使用同步方式调用分析器
                 result = self.analyzer.analyze(user_data)
-                print(f"Analysis result: {json.dumps(result, ensure_ascii=False)}")  # 添加调试信息
+                print(f"Analysis result: {json.dumps(result, ensure_ascii=False, indent=2)}")  # 美化输出
+
+                # 检查结果结构
+                if 'data' not in result:
+                    print("Warning: 'data' key missing in result")
+                elif 'basic_info' not in result['data']:
+                    print("Warning: 'basic_info' missing in result data")
 
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
-                self.send_header('Access-Control-Allow-Origin', '*')  # 添加 CORS 头
+                self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
                 self.wfile.write(json.dumps(result).encode())
                 print("Successfully sent analysis result")

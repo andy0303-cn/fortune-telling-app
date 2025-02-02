@@ -4,11 +4,22 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 获取分析结果
     const fortuneResult = JSON.parse(localStorage.getItem('fortuneResult') || '{}');
-    console.log('Loaded fortune result:', fortuneResult);  // 添加调试信息
+    console.log('Raw localStorage data:', localStorage.getItem('fortuneResult'));
+    console.log('Parsed fortune result:', fortuneResult);
+    
+    // 检查数据结构
+    if (!fortuneResult.data) {
+        console.error('No data found in fortune result');
+    } else {
+        console.log('Basic info:', fortuneResult.data.basic_info);
+        console.log('Overall analysis:', fortuneResult.data.overall);
+        console.log('Career analysis:', fortuneResult.data.career);
+        // ... 其他部分保持不变
+    }
     
     // 填充基本信息
     document.getElementById('userName').textContent = params.get('name') || '未知';
-    document.getElementById('userGender').textContent = params.get('gender') === 'M' ? '男' : '女';
+    document.getElementById('userGender').textContent = params.get('gender') === 'F' ? '女' : '男';
     document.getElementById('userBirthdate').textContent = params.get('birthdate') || '未知';
     document.getElementById('userBirthplace').textContent = params.get('birthplace') || '未知';
     
