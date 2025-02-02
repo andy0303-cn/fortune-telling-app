@@ -37,8 +37,8 @@
     },
     "build": {
         "env": {
-            "PYTHON_VERSION": "3.9"
+            "PYTHON_VERSION": "3.9",
+            "VERCEL_FORCE_DEPLOY": "1"
         }
     }
 }
-// Updated at: 2025年 2月 2日 星期日 16时21分46秒 CST
