@@ -28,17 +28,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (result.status === 'success') {
                     // 存储分析结果
                     localStorage.setItem('fortuneResult', JSON.stringify(result.data));
-                    // 将用户数据添加到 URL 参数
-                    const params = new URLSearchParams({
-                        name: data.name,
-                        gender: data.gender === 'M' ? '男' : '女',
-                        birthdate: new Date(data.birthdate).toLocaleString('zh-CN'),
-                        birthplace: data.birthplace
-                    });
-                    // 使用完整的 URL 进行跳转
-                    const resultUrl = `/result?${params.toString()}`;
-                    console.log('Redirecting to:', resultUrl);
-                    window.location.href = resultUrl;
+                    
+                    // 构建查询参数
+                    const params = new URLSearchParams();
+                    params.append('name', data.name);
+                    params.append('gender', data.gender === 'M' ? '男' : '女');
+                    params.append('birthdate', new Date(data.birthdate).toLocaleString('zh-CN'));
+                    params.append('birthplace', data.birthplace);
+                    
+                    // 使用表单提交方式跳转
+                    const form = document.createElement('form');
+                    form.method = 'GET';
+                    form.action = '/result?' + params.toString();
+                    document.body.appendChild(form);
+                    form.submit();
                 } else {
                     throw new Error('分析失败');
                 }
