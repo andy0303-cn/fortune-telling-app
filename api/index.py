@@ -1,6 +1,7 @@
 from http.server import BaseHTTPRequestHandler
 import os
 import json
+from urllib.parse import urlparse, parse_qs
 
 def read_file(file_path):
     with open(file_path, 'r', encoding='utf-8') as f:
@@ -8,7 +9,11 @@ def read_file(file_path):
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        if self.path == '/':
+        # 解析 URL 和参数
+        parsed_url = urlparse(self.path)
+        path = parsed_url.path
+        
+        if path == '/':
             # 返回 index.html
             try:
                 content = read_file('templates/index.html')
@@ -19,7 +24,7 @@ class handler(BaseHTTPRequestHandler):
             except Exception as e:
                 print(f"Error reading index.html: {str(e)}")
                 self.send_error(500, "Internal Server Error")
-        elif self.path == '/static/css/style.css':
+        elif path == '/static/css/style.css':
             # 返回 CSS 文件
             try:
                 content = read_file('static/css/style.css')
@@ -29,6 +34,39 @@ class handler(BaseHTTPRequestHandler):
                 self.wfile.write(content.encode())
             except Exception as e:
                 print(f"Error reading style.css: {str(e)}")
+                self.send_error(404, "File not found")
+        elif path == '/static/js/main.js':
+            # 返回 JavaScript 文件
+            try:
+                content = read_file('static/js/main.js')
+                self.send_response(200)
+                self.send_header('Content-type', 'application/javascript')
+                self.end_headers()
+                self.wfile.write(content.encode())
+            except Exception as e:
+                print(f"Error reading main.js: {str(e)}")
+                self.send_error(404, "File not found")
+        elif path == '/result':
+            # 返回结果页面
+            try:
+                content = read_file('templates/result.html')
+                self.send_response(200)
+                self.send_header('Content-type', 'text/html; charset=utf-8')
+                self.end_headers()
+                self.wfile.write(content.encode())
+            except Exception as e:
+                print(f"Error reading result.html: {str(e)}")
+                self.send_error(500, "Internal Server Error")
+        elif path == '/static/js/result.js':
+            # 返回 result.js 文件
+            try:
+                content = read_file('static/js/result.js')
+                self.send_response(200)
+                self.send_header('Content-type', 'application/javascript')
+                self.end_headers()
+                self.wfile.write(content.encode())
+            except Exception as e:
+                print(f"Error reading result.js: {str(e)}")
                 self.send_error(404, "File not found")
         else:
             self.send_error(404, "File not found")
