@@ -25,9 +25,19 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (response.ok) {
                 const result = await response.json();
-                // TODO: 显示结果
-                console.log(result);
-                alert('分析完成！');
+                if (result.status === 'success') {
+                    // 将数据添加到 URL 参数
+                    const params = new URLSearchParams({
+                        name: data.name,
+                        gender: data.gender,
+                        birthdate: data.birthdate,
+                        birthplace: data.birthplace
+                    });
+                    // 跳转到结果页面
+                    window.location.href = `/result?${params.toString()}`;
+                } else {
+                    throw new Error('分析失败');
+                }
             } else {
                 throw new Error('请求失败');
             }
