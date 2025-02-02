@@ -7,8 +7,8 @@ class FortuneAnalyzer:
         self.openai_key = os.getenv('OPENAI_API_KEY', '')
         self.deepseek_key = os.getenv('DEEPSEEK_API_KEY', '')
         self.zodiac_animals = {
-            0: "猴", 1: "鸡", 2: "狗", 3: "猪", 4: "鼠", 5: "牛",
-            6: "虎", 7: "兔", 8: "龙", 9: "蛇", 10: "马", 11: "羊"
+            0: "鼠", 1: "牛", 2: "虎", 3: "兔", 4: "龙", 5: "蛇",
+            6: "马", 7: "羊", 8: "猴", 9: "鸡", 10: "狗", 11: "猪"
         }
         self.elements = ["金", "木", "水", "火", "土"]
         self.current_year = 2025  # 蛇年
