@@ -9,6 +9,8 @@
 <body>
     <div class="container result-container">
         <h1>命理分析结果</h1>
+        
+        <!-- 基本信息 -->
         <div class="user-info">
             <h2>基本信息</h2>
             <div class="info-grid">
@@ -28,34 +30,31 @@
                     <label>出生地点</label>
                     <span id="userBirthplace"></span>
                 </div>
+                <div class="info-item">
+                    <label>生肖</label>
+                    <span id="userZodiac"></span>
+                </div>
+                <div class="info-item">
+                    <label>星座</label>
+                    <span id="userWesternSign"></span>
+                </div>
             </div>
         </div>
         
-        <div class="fortune-results">
-            <div class="result-card" id="overall">
-                <h3>整体运势</h3>
-                <p></p>
-            </div>
-            <div class="result-card" id="career">
-                <h3>事业运势</h3>
-                <p></p>
-            </div>
-            <div class="result-card" id="wealth">
-                <h3>财运分析</h3>
-                <p></p>
-            </div>
-            <div class="result-card" id="love">
-                <h3>感情运势</h3>
-                <p></p>
-            </div>
-            <div class="result-card" id="health">
-                <h3>健康提醒</h3>
-                <p></p>
-            </div>
-            <div class="result-card" id="relationships">
-                <h3>人际关系</h3>
-                <p></p>
-            </div>
+        <!-- 整体运势 -->
+        <div class="result-card" id="overall">
+            <h3>整体运势</h3>
+            <p class="summary"></p>
+            <div class="analysis-list"></div>
+            <div class="highlights-list"></div>
+        </div>
+        
+        <!-- 事业运势 -->
+        <div class="result-card" id="career">
+            <h3>事业运势</h3>
+            <p class="summary"></p>
+            <div class="analysis-list"></div>
+            <div class="suggestions-list"></div>
         </div>
         
         <div class="actions">
