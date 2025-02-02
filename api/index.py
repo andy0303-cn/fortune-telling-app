@@ -1,18 +1,9 @@
-import sys
-from pathlib import Path
-
-# 添加项目根目录到 Python 路径
-root_dir = Path(__file__).parent.parent
-sys.path.append(str(root_dir))
-
-from flask import Flask, render_template, request, jsonify, session
-from core.ai_providers.factory import AIProviderFactory
+from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__, 
     template_folder='../templates',
     static_folder='../static'
 )
-app.config['SECRET_KEY'] = 'your-secret-key'  # 用于会话加密
 
 @app.route('/')
 def index():
@@ -22,66 +13,22 @@ def index():
 def analyze_fortune():
     try:
         data = request.get_json(force=True)
-        print("\n=== Starting analysis ===")
-        print("Received data:", data)
         
-        provider = AIProviderFactory.create_provider()
-        fortune_result = provider.generate_fortune(data)
-        print("Raw fortune result:", fortune_result)  # 打印原始结果
-        
-        # 解析返回的文本，提取各个部分
-        sections = {
-            'overall_fortune': '暂无数据',
-            'career_fortune': '暂无数据',
-            'wealth_fortune': '暂无数据',
-            'love_fortune': '暂无数据',
-            'health_fortune': '暂无数据',
-            'relationship_fortune': '暂无数据'
+        # 返回固定的测试数据
+        result = {
+            'overall_fortune': '运势平稳向上，保持积极心态，把握机遇。',
+            'career_fortune': '工作发展顺利，注意提升专业能力，保持良好的团队协作。',
+            'wealth_fortune': '财务状况稳定，建议合理规划支出，关注长期投资。',
+            'love_fortune': '感情生活和谐，保持真诚态度，增进情感交流。',
+            'health_fortune': '身体状况良好，注意作息规律，保持适度运动。',
+            'relationship_fortune': '人际关系融洽，多参与社交活动，深化重要友谊。'
         }
-        
-        # 改进文本解析逻辑
-        current_section = None
-        current_content = []
-        
-        for line in fortune_result.split('\n'):
-            line = line.strip()
-            if not line:
-                continue
-            
-            print(f"Processing line: {line}")  # 调试每一行
-            
-            if '】：' in line:
-                section_name = line.split('】：')[0].lstrip('【')
-                content = line.split('】：')[1]
-                
-                print(f"Found section: {section_name}")  # 调试节点
-                print(f"Content: {content}")  # 调试内容
-                
-                if section_name == '整体运势':
-                    sections['overall_fortune'] = content
-                elif section_name == '事业运势':
-                    sections['career_fortune'] = content
-                elif section_name == '财运分析':
-                    sections['wealth_fortune'] = content
-                elif section_name == '感情运势':
-                    sections['love_fortune'] = content
-                elif section_name == '健康提醒':
-                    sections['health_fortune'] = content
-                elif section_name == '人际关系':
-                    sections['relationship_fortune'] = content
-        
-        print("Final parsed sections:", sections)  # 打印最终结果
-        
-        session['fortune_result'] = sections
         
         return jsonify({
             'status': 'success',
-            'result': sections
+            'result': result
         })
     except Exception as e:
-        print(f"Error in analyze_fortune: {str(e)}")
-        import traceback
-        print(f"Traceback: {traceback.format_exc()}")
         return jsonify({
             'status': 'error',
             'message': str(e)
@@ -89,16 +36,19 @@ def analyze_fortune():
 
 @app.route('/result')
 def result():
-    # 从会话中获取运势结果
-    fortune_result = session.get('fortune_result', {
-        'overall_fortune': '暂无运势分析结果'
-    })
     return render_template('result.html', 
-        fortune=fortune_result,
+        fortune={
+            'overall_fortune': '运势平稳向上，保持积极心态，把握机遇。',
+            'career_fortune': '工作发展顺利，注意提升专业能力，保持良好的团队协作。',
+            'wealth_fortune': '财务状况稳定，建议合理规划支出，关注长期投资。',
+            'love_fortune': '感情生活和谐，保持真诚态度，增进情感交流。',
+            'health_fortune': '身体状况良好，注意作息规律，保持适度运动。',
+            'relationship_fortune': '人际关系融洽，多参与社交活动，深化重要友谊。'
+        },
         user={
             'name': request.args.get('name', '测试用户'),
             'gender': request.args.get('gender', 'M'),
-            'birth_date': request.args.get('birthdate', '未知'),  # 直接使用传入的格式化日期
+            'birth_date': request.args.get('birthdate', '未知'),
             'birth_place': request.args.get('birthplace', '测试地点')
         }
     ) 
