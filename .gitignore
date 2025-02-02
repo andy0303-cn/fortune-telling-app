@@ -15,4 +15,7 @@ venv/
 .env
 
 # 日志
-*.log 
+*.log
+
+# Mac
+.DS_Store 
