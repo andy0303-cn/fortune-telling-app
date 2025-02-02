@@ -7,11 +7,16 @@ from urllib.parse import urlparse, parse_qs
 # Last updated: 2024-02-02
 
 def read_file(file_path):
-    # 获取项目根目录
-    base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    full_path = os.path.join(base_path, file_path)
-    with open(full_path, 'r', encoding='utf-8') as f:
-        return f.read()
+    try:
+        # 获取项目根目录
+        base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        full_path = os.path.join(base_path, file_path)
+        print(f"Attempting to read file: {full_path}")  # 调试信息
+        with open(full_path, 'r', encoding='utf-8') as f:
+            return f.read()
+    except Exception as e:
+        print(f"Error reading file {file_path}: {str(e)}")  # 调试信息
+        raise
 
 class handler(BaseHTTPRequestHandler):
     def log_request(self, code='-', size='-'):
