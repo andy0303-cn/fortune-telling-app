@@ -9,74 +9,39 @@ def read_file(file_path):
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        # 解析 URL 和参数
         parsed_url = urlparse(self.path)
         path = parsed_url.path
         
         if path == '/':
-            # 返回 index.html
             try:
                 content = read_file('templates/index.html')
                 self.send_response(200)
                 self.send_header('Content-type', 'text/html; charset=utf-8')
-                self.send_header('Access-Control-Allow-Origin', '*')
-                self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-                self.send_header('Access-Control-Allow-Headers', 'Content-Type')
                 self.end_headers()
                 self.wfile.write(content.encode())
             except Exception as e:
-                print(f"Error reading index.html: {str(e)}")
-                self.send_error(500, "Internal Server Error")
-        elif path == '/static/css/style.css':
-            # 返回 CSS 文件
-            try:
-                content = read_file('static/css/style.css')
-                self.send_response(200)
-                self.send_header('Content-type', 'text/css')
-                self.send_header('Access-Control-Allow-Origin', '*')
-                self.end_headers()
-                self.wfile.write(content.encode())
-            except Exception as e:
-                print(f"Error reading style.css: {str(e)}")
-                self.send_error(404, "File not found")
-        elif path == '/static/js/main.js':
-            # 返回 JavaScript 文件
-            try:
-                content = read_file('static/js/main.js')
-                self.send_response(200)
-                self.send_header('Content-type', 'application/javascript')
-                self.send_header('Access-Control-Allow-Origin', '*')
-                self.end_headers()
-                self.wfile.write(content.encode())
-            except Exception as e:
-                print(f"Error reading main.js: {str(e)}")
-                self.send_error(404, "File not found")
+                self.send_error(500, str(e))
         elif path == '/result':
-            # 返回结果页面
             try:
                 content = read_file('templates/result.html')
                 self.send_response(200)
                 self.send_header('Content-type', 'text/html; charset=utf-8')
-                self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
                 self.wfile.write(content.encode())
             except Exception as e:
-                print(f"Error reading result.html: {str(e)}")
-                self.send_error(500, "Internal Server Error")
-        elif path == '/static/js/result.js':
-            # 返回 result.js 文件
+                self.send_error(500, str(e))
+        elif path.startswith('/static/'):
             try:
-                content = read_file('static/js/result.js')
+                content = read_file(path[1:])  # 移除开头的 /
+                content_type = 'text/css' if path.endswith('.css') else 'application/javascript'
                 self.send_response(200)
-                self.send_header('Content-type', 'application/javascript')
-                self.send_header('Access-Control-Allow-Origin', '*')
+                self.send_header('Content-type', content_type)
                 self.end_headers()
                 self.wfile.write(content.encode())
             except Exception as e:
-                print(f"Error reading result.js: {str(e)}")
-                self.send_error(404, "File not found")
+                self.send_error(404, str(e))
         else:
-            self.send_error(404, "File not found")
+            self.send_error(404, "Not found")
 
     def do_POST(self):
         if self.path == '/analyze':
@@ -97,13 +62,10 @@ class handler(BaseHTTPRequestHandler):
                     }
                 }
 
-                self.send_response(200)
-                self.send_header('Content-type', 'application/json')
-                self.send_header('Access-Control-Allow-Origin', '*')
-                self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-                self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+                # 返回重定向响应
+                self.send_response(303)  # 303 See Other
+                self.send_header('Location', '/result')
                 self.end_headers()
-                self.wfile.write(json.dumps(result).encode())
             except Exception as e:
                 self.send_error(500, str(e))
         else:

@@ -12,13 +12,12 @@
     ],
     "routes": [
         {
+            "src": "/static/(.*)",
+            "dest": "api/index.py"
+        },
+        {
             "src": "/(.*)",
-            "dest": "api/index.py",
-            "headers": {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type"
-            }
+            "dest": "api/index.py"
         }
     ]
 }
