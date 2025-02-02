@@ -62,10 +62,11 @@ class handler(BaseHTTPRequestHandler):
                     }
                 }
 
-                # 返回重定向响应
-                self.send_response(303)  # 303 See Other
-                self.send_header('Location', '/result')
+                # 返回 JSON 响应
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
                 self.end_headers()
+                self.wfile.write(json.dumps(result).encode())
             except Exception as e:
                 self.send_error(500, str(e))
         else:
