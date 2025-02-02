@@ -29,17 +29,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     // 存储分析结果
                     localStorage.setItem('fortuneResult', JSON.stringify(result.data));
                     
-                    // 直接构建完整的 URL
-                    const baseUrl = window.location.origin;
+                    // 构建查询参数
                     const params = new URLSearchParams({
                         name: data.name,
                         gender: data.gender === 'M' ? '男' : '女',
                         birthdate: new Date(data.birthdate).toLocaleString('zh-CN'),
                         birthplace: data.birthplace
-                    });
+                    }).toString();
                     
-                    // 使用完整的 URL 进行跳转
-                    window.location.href = `${baseUrl}/result?${params.toString()}`;
+                    // 使用相对路径进行跳转
+                    window.location.replace(`/result?${params}`);
                 } else {
                     throw new Error('分析失败');
                 }
