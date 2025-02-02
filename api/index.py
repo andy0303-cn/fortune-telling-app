@@ -2,6 +2,7 @@ from http.server import BaseHTTPRequestHandler
 import os
 import json
 from urllib.parse import urlparse, parse_qs
+from fortune_analysis import FortuneAnalyzer
 
 # API Version 1.0.1
 # Last updated: 2024-02-02
@@ -19,6 +20,10 @@ def read_file(file_path):
         raise
 
 class handler(BaseHTTPRequestHandler):
+    def __init__(self, *args, **kwargs):
+        self.analyzer = FortuneAnalyzer()
+        super().__init__(*args, **kwargs)
+
     def log_request(self, code='-', size='-'):
         print(f"Request: {self.command} {self.path} {code}")
 
@@ -53,7 +58,7 @@ class handler(BaseHTTPRequestHandler):
             else:
                 self.send_error(500, str(e))
 
-    def do_POST(self):
+    async def do_POST(self):
         if self.path == '/analyze':
             try:
                 content_length = int(self.headers['Content-Length'])
@@ -61,17 +66,8 @@ class handler(BaseHTTPRequestHandler):
                 user_data = json.loads(post_data.decode('utf-8'))
                 print(f"Received POST data: {user_data}")  # 调试信息
 
-                result = {
-                    'status': 'success',
-                    'data': {
-                        'overall': '运势平稳向上，保持积极心态，把握机遇。',
-                        'career': '工作发展顺利，注意提升专业能力，保持良好的团队协作。',
-                        'wealth': '财务状况稳定，建议合理规划支出，关注长期投资。',
-                        'love': '感情生活和谐，保持真诚态度，增进情感交流。',
-                        'health': '身体状况良好，注意作息规律，保持适度运动。',
-                        'relationships': '人际关系融洽，多参与社交活动，深化重要友谊。'
-                    }
-                }
+                # 使用命理分析器生成结果
+                result = await self.analyzer.analyze(user_data)
 
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
