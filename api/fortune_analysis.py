@@ -6,6 +6,12 @@ class FortuneAnalyzer:
     def __init__(self):
         self.openai_key = os.getenv('OPENAI_API_KEY', '')
         self.deepseek_key = os.getenv('DEEPSEEK_API_KEY', '')
+        self.zodiac_animals = {
+            0: "猴", 1: "鸡", 2: "狗", 3: "猪", 4: "鼠", 5: "牛",
+            6: "虎", 7: "兔", 8: "龙", 9: "蛇", 10: "马", 11: "羊"
+        }
+        self.elements = ["金", "木", "水", "火", "土"]
+        self.current_year = 2025  # 蛇年
 
     def analyze(self, user_data):
         """
@@ -69,4 +75,50 @@ class FortuneAnalyzer:
         调用 Deepseek API 的方法
         TODO: 实现真实的 API 调用
         """
-        pass 
+        pass
+
+    def _calculate_chinese_zodiac(self, birthdate):
+        """计算生肖"""
+        year = birthdate.year
+        zodiac_index = (year - 1900) % 12
+        return self.zodiac_animals[zodiac_index]
+
+    def _analyze_zodiac_compatibility(self, zodiac):
+        """分析生肖相合"""
+        compatibility = {
+            "鼠": ["龙", "猴"],
+            "牛": ["蛇", "鸡"],
+            "虎": ["马", "狗"],
+            "兔": ["羊", "猪"],
+            "龙": ["鼠", "猴"],
+            "蛇": ["牛", "鸡"],
+            "马": ["虎", "狗"],
+            "羊": ["兔", "猪"],
+            "猴": ["鼠", "龙"],
+            "鸡": ["牛", "蛇"],
+            "狗": ["虎", "马"],
+            "猪": ["兔", "羊"]
+        }
+        return compatibility.get(zodiac, [])
+
+    def _calculate_western_sign(self, birthdate):
+        """计算星座"""
+        month = birthdate.month
+        day = birthdate.day
+        
+        if (month == 3 and day >= 21) or (month == 4 and day <= 19):
+            return "白羊"
+        elif (month == 4 and day >= 20) or (month == 5 and day <= 20):
+            return "金牛"
+        # ... 其他星座判断 ...
+        else:
+            return "双鱼"
+
+    def _get_zodiac_relationship(self, zodiac1, zodiac2):
+        """分析生肖关系"""
+        relationships = {
+            ("鼠", "牛"): "相邻",
+            ("鼠", "虎"): "相冲",
+            # ... 其他关系 ...
+        }
+        return relationships.get((zodiac1, zodiac2), "普通") 

@@ -1,5 +1,6 @@
 # Python
 __pycache__/
+*.pyc
 *.py[cod]
 *$py.class
 venv/
@@ -14,7 +15,7 @@ venv/
 # Environment
 .env
 
-# 日志
+# Logs
 *.log
 
 # Mac
