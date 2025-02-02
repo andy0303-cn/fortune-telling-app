@@ -3,6 +3,9 @@ import os
 import json
 from urllib.parse import urlparse, parse_qs
 
+# API Version 1.0.1
+# Last updated: 2024-02-02
+
 def read_file(file_path):
     # 获取项目根目录
     base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
