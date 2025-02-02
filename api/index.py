@@ -1,15 +1,9 @@
-from flask import Flask, Response
+from http.server import BaseHTTPRequestHandler
 
-app = Flask(__name__)
-
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
-def catch_all(path):
-    return Response('Hello from Vercel!', mimetype='text/plain')
-
-# Vercel 需要这个处理程序
-def handler(event, context):
-    return app(event, context)
-
-if __name__ == '__main__':
-    app.run() 
+class handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'text/plain')
+        self.end_headers()
+        self.wfile.write('Hello from Vercel!'.encode())
+        return 
