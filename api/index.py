@@ -8,56 +8,50 @@ def read_file(file_path):
         return f.read()
 
 class handler(BaseHTTPRequestHandler):
+    def log_request(self, code='-', size='-'):
+        print(f"Request: {self.command} {self.path} {code}")
+
     def do_GET(self):
-        print(f"Handling GET request for path: {self.path}")  # 调试信息
         parsed_url = urlparse(self.path)
         path = parsed_url.path
+        query = parse_qs(parsed_url.query)
         
-        if path == '/':
-            try:
+        print(f"GET request: Path={path}, Query={query}")  # 调试信息
+        
+        try:
+            if path == '/':
                 content = read_file('templates/index.html')
-                self.send_response(200)
-                self.send_header('Content-type', 'text/html; charset=utf-8')
-                self.end_headers()
-                self.wfile.write(content.encode())
-            except Exception as e:
-                print(f"Error serving index.html: {str(e)}")  # 调试信息
-                self.send_error(500, str(e))
-        elif path == '/result':
-            try:
+                content_type = 'text/html'
+            elif path == '/result':
                 content = read_file('templates/result.html')
-                self.send_response(200)
-                self.send_header('Content-type', 'text/html; charset=utf-8')
-                self.end_headers()
-                self.wfile.write(content.encode())
-            except Exception as e:
-                print(f"Error serving result.html: {str(e)}")  # 调试信息
-                self.send_error(500, str(e))
-        elif path.startswith('/static/'):
-            try:
+                content_type = 'text/html'
+            elif path.startswith('/static/'):
                 file_path = path[1:]  # 移除开头的 /
-                print(f"Attempting to serve static file: {file_path}")  # 调试信息
                 content = read_file(file_path)
                 content_type = 'text/css' if path.endswith('.css') else 'application/javascript'
-                self.send_response(200)
-                self.send_header('Content-type', content_type)
-                self.end_headers()
-                self.wfile.write(content.encode())
-            except Exception as e:
-                print(f"Error serving static file: {str(e)}")  # 调试信息
+            else:
+                raise FileNotFoundError(f"File not found: {path}")
+
+            self.send_response(200)
+            self.send_header('Content-type', f'{content_type}; charset=utf-8')
+            self.end_headers()
+            self.wfile.write(content.encode())
+            print(f"Successfully served {path}")  # 调试信息
+
+        except Exception as e:
+            print(f"Error handling request: {str(e)}")  # 调试信息
+            if isinstance(e, FileNotFoundError):
                 self.send_error(404, str(e))
-        else:
-            print(f"Path not found: {path}")  # 调试信息
-            self.send_error(404, "Not found")
+            else:
+                self.send_error(500, str(e))
 
     def do_POST(self):
-        print(f"Handling POST request for path: {self.path}")  # 调试信息
         if self.path == '/analyze':
             try:
                 content_length = int(self.headers['Content-Length'])
                 post_data = self.rfile.read(content_length)
                 user_data = json.loads(post_data.decode('utf-8'))
-                print(f"Received user data: {user_data}")  # 调试信息
+                print(f"Received POST data: {user_data}")  # 调试信息
 
                 result = {
                     'status': 'success',
@@ -75,7 +69,8 @@ class handler(BaseHTTPRequestHandler):
                 self.send_header('Content-type', 'application/json')
                 self.end_headers()
                 self.wfile.write(json.dumps(result).encode())
-                print("Successfully sent response")  # 调试信息
+                print("Successfully sent analysis result")  # 调试信息
+
             except Exception as e:
                 print(f"Error processing POST request: {str(e)}")  # 调试信息
                 self.send_error(500, str(e))
