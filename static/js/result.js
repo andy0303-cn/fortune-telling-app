@@ -4,10 +4,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 获取分析结果
     const fortuneResult = JSON.parse(localStorage.getItem('fortuneResult') || '{}');
+    console.log('Loaded fortune result:', fortuneResult);  // 添加调试信息
     
     // 填充基本信息
     document.getElementById('userName').textContent = params.get('name') || '未知';
-    document.getElementById('userGender').textContent = params.get('gender') || '未知';
+    document.getElementById('userGender').textContent = params.get('gender') === 'M' ? '男' : '女';
     document.getElementById('userBirthdate').textContent = params.get('birthdate') || '未知';
     document.getElementById('userBirthplace').textContent = params.get('birthplace') || '未知';
     
@@ -21,11 +22,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 通用函数：填充分析内容
     function fillAnalysisSection(sectionId, data) {
-        if (!data) return;
+        if (!data) {
+            console.log(`No data for section: ${sectionId}`);  // 添加调试信息
+            return;
+        }
+        console.log(`Filling section ${sectionId} with data:`, data);  // 添加调试信息
         
         const section = document.getElementById(sectionId);
+        if (!section) {
+            console.log(`Section element not found: ${sectionId}`);  // 添加调试信息
+            return;
+        }
+
         if (data.summary) {
-            section.querySelector('.summary').textContent = data.summary;
+            const summaryElem = section.querySelector('.summary');
+            if (summaryElem) {
+                summaryElem.textContent = data.summary;
+            }
         }
         
         if (data.analysis) {
@@ -77,11 +90,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 填充所有分析内容
     if (fortuneResult.data) {
+        console.log('Filling all sections with data:', fortuneResult.data);  // 添加调试信息
         fillAnalysisSection('overall', fortuneResult.data.overall);
         fillAnalysisSection('career', fortuneResult.data.career);
         fillAnalysisSection('wealth', fortuneResult.data.wealth);
         fillAnalysisSection('love', fortuneResult.data.love);
         fillAnalysisSection('health', fortuneResult.data.health);
         fillAnalysisSection('relationships', fortuneResult.data.relationships);
+    } else {
+        console.log('No fortune data available');  // 添加调试信息
     }
 }); 

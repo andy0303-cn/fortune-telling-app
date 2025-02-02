@@ -64,13 +64,15 @@ class handler(BaseHTTPRequestHandler):
                 content_length = int(self.headers['Content-Length'])
                 post_data = self.rfile.read(content_length)
                 user_data = json.loads(post_data.decode('utf-8'))
-                print(f"Received POST data: {user_data}")
+                print(f"Received POST data: {user_data}")  # 调试信息
 
                 # 使用同步方式调用分析器
                 result = self.analyzer.analyze(user_data)
+                print(f"Analysis result: {json.dumps(result, ensure_ascii=False)}")  # 添加调试信息
 
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')  # 添加 CORS 头
                 self.end_headers()
                 self.wfile.write(json.dumps(result).encode())
                 print("Successfully sent analysis result")
