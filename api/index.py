@@ -4,7 +4,10 @@ import json
 from urllib.parse import urlparse, parse_qs
 
 def read_file(file_path):
-    with open(file_path, 'r', encoding='utf-8') as f:
+    # 获取项目根目录
+    base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    full_path = os.path.join(base_path, file_path)
+    with open(full_path, 'r', encoding='utf-8') as f:
         return f.read()
 
 class handler(BaseHTTPRequestHandler):
@@ -14,9 +17,6 @@ class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         parsed_url = urlparse(self.path)
         path = parsed_url.path
-        query = parse_qs(parsed_url.query)
-        
-        print(f"GET request: Path={path}, Query={query}")  # 调试信息
         
         try:
             if path == '/':
@@ -39,7 +39,7 @@ class handler(BaseHTTPRequestHandler):
             print(f"Successfully served {path}")  # 调试信息
 
         except Exception as e:
-            print(f"Error handling request: {str(e)}")  # 调试信息
+            print(f"Error handling request: {str(e)}")
             if isinstance(e, FileNotFoundError):
                 self.send_error(404, str(e))
             else:
@@ -72,7 +72,7 @@ class handler(BaseHTTPRequestHandler):
                 print("Successfully sent analysis result")  # 调试信息
 
             except Exception as e:
-                print(f"Error processing POST request: {str(e)}")  # 调试信息
+                print(f"Error processing POST request: {str(e)}")
                 self.send_error(500, str(e))
         else:
             self.send_error(404, "Not found")
