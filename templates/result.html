@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>命理分析结果</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container result-container">
+        <h1>命理分析结果</h1>
+        <div class="user-info">
+            <h2>基本信息</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>姓名</label>
+                    <span id="userName"></span>
+                </div>
+                <div class="info-item">
+                    <label>性别</label>
+                    <span id="userGender"></span>
+                </div>
+                <div class="info-item">
+                    <label>出生日期</label>
+                    <span id="userBirthdate"></span>
+                </div>
+                <div class="info-item">
+                    <label>出生地点</label>
+                    <span id="userBirthplace"></span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="fortune-results">
+            <div class="result-card" id="overall">
+                <h3>整体运势</h3>
+                <p></p>
+            </div>
+            <div class="result-card" id="career">
+                <h3>事业运势</h3>
+                <p></p>
+            </div>
+            <div class="result-card" id="wealth">
+                <h3>财运分析</h3>
+                <p></p>
+            </div>
+            <div class="result-card" id="love">
+                <h3>感情运势</h3>
+                <p></p>
+            </div>
+            <div class="result-card" id="health">
+                <h3>健康提醒</h3>
+                <p></p>
+            </div>
+            <div class="result-card" id="relationships">
+                <h3>人际关系</h3>
+                <p></p>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <button onclick="window.location.href='/'">返回首页</button>
+        </div>
+    </div>
+    <script src="/static/js/result.js"></script>
+</body>
+</html> 
