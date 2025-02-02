@@ -2,7 +2,12 @@ import sys
 import os
 from flask import Flask
 
-app = Flask(__name__)
+def application(env, start_response):
+    """最简单的 WSGI 应用"""
+    start_response('200 OK', [('Content-Type', 'text/html')])
+    return [b'Hello World']
+
+app = application
 
 @app.route('/')
 def index():
