@@ -1,1 +1,8 @@
 # No additional dependencies required
+
+# Vercel Python requirements
+
+# AI API requirements
+openai>=1.0.0
+httpx>=0.24.0  # 用于异步 HTTP 请求
+python-dotenv>=0.19.0  # 用于环境变量管理
