@@ -8,35 +8,41 @@ document.addEventListener('DOMContentLoaded', function() {
             throw new Error('No data found in localStorage');
         }
 
+        // 解析 JSON 字符串
         const fortuneResult = JSON.parse(rawData);
         console.log('Parsed fortune result:', fortuneResult);
 
-        if (!fortuneResult.data) {
-            throw new Error('Invalid data structure: missing data property');
-        }
-
         // 填充基本信息
-        const basicInfo = fortuneResult.data.basic_info;
-        if (basicInfo) {
+        const params = new URLSearchParams(window.location.search);
+        document.getElementById('userName').textContent = params.get('name') || '未知';
+        document.getElementById('userGender').textContent = params.get('gender') === 'F' ? '女' : '男';
+        document.getElementById('userBirthdate').textContent = params.get('birthdate') || '未知';
+        document.getElementById('userBirthplace').textContent = params.get('birthplace') || '未知';
+
+        // 填充命理信息
+        if (fortuneResult.basic_info) {
+            const basicInfo = fortuneResult.basic_info;
+            document.getElementById('userZodiac').textContent = basicInfo.zodiac || '未知';
+            document.getElementById('userWesternSign').textContent = basicInfo.western_sign || '未知';
             document.getElementById('userBazi').textContent = basicInfo.bazi ? basicInfo.bazi.full : '未知';
             document.getElementById('userWuxing').textContent = basicInfo.wuxing ? basicInfo.wuxing.dominant : '未知';
         }
 
         // 填充分析内容
-        Object.entries({
+        const sections = {
             'overall': '整体运势',
             'career': '事业运势',
             'wealth': '财运分析',
             'love': '感情运势',
             'health': '健康提醒',
             'relationships': '人际关系'
-        }).forEach(([key, title]) => {
-            const data = fortuneResult.data[key];
+        };
+
+        Object.entries(sections).forEach(([key, title]) => {
+            const data = fortuneResult[key];
+            console.log(`Filling ${title}:`, data);
             if (data) {
-                console.log(`Filling ${title}:`, data);
                 fillAnalysisSection(key, data);
-            } else {
-                console.warn(`Missing data for ${title}`);
             }
         });
 
@@ -46,37 +52,32 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// 通用函数：填充分析内容
 function fillAnalysisSection(sectionId, data) {
-    if (!data) {
-        console.log(`No data for section: ${sectionId}`);  // 添加调试信息
-        return;
-    }
-    console.log(`Filling section ${sectionId} with data:`, data);  // 添加调试信息
-    
     const section = document.getElementById(sectionId);
-    if (!section) {
-        console.log(`Section element not found: ${sectionId}`);  // 添加调试信息
-        return;
-    }
+    if (!section) return;
 
+    // 填充摘要
     if (data.summary) {
         const summaryElem = section.querySelector('.summary');
         if (summaryElem) {
             summaryElem.textContent = data.summary;
         }
     }
-    
+
+    // 填充分析列表
     if (data.analysis) {
         const analysisList = section.querySelector('.analysis-list');
-        analysisList.innerHTML = '';
-        data.analysis.forEach(item => {
-            const p = document.createElement('p');
-            p.textContent = item;
-            analysisList.appendChild(p);
-        });
+        if (analysisList) {
+            analysisList.innerHTML = '';
+            data.analysis.forEach(item => {
+                const p = document.createElement('p');
+                p.textContent = item;
+                analysisList.appendChild(p);
+            });
+        }
     }
-    
+
+    // 填充建议列表
     if (data.suggestions) {
         const suggestionsList = section.querySelector('.suggestions-list');
         if (suggestionsList) {
@@ -89,6 +90,7 @@ function fillAnalysisSection(sectionId, data) {
         }
     }
 
+    // 填充年度运势
     if (data.yearly_fortune) {
         const yearlyFortune = section.querySelector('.yearly-fortune');
         if (yearlyFortune) {
@@ -101,6 +103,7 @@ function fillAnalysisSection(sectionId, data) {
         }
     }
 
+    // 填充月度趋势
     if (data.monthly_trends) {
         const monthlyTrends = section.querySelector('.monthly-trends');
         if (monthlyTrends) {
